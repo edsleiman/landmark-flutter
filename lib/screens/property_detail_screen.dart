@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/property_store.dart';
 import '../providers/auth_store.dart';
 import '../models/user.dart';
+import '../models/feature_catalog.dart';
 import 'amenities_browser_screen.dart';
 import 'shared/contact_screen.dart';
 import 'customer/request_viewing_screen.dart';
