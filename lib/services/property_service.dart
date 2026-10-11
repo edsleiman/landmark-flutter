@@ -4,7 +4,11 @@ import '../models/property.dart';
 import '../models/feature_catalog.dart';
 
 class PropertyService {
-  static const _storeKey = 'landmark.properties';
+  // v2: bumped because v1 seeded demo listings with no photos, which is
+  // already persisted on anyone who ran the app before this fix — bumping
+  // the key forces a fresh seed with real photos instead of leaving the
+  // old imageless data stuck in local storage.
+  static const _storeKey = 'landmark.properties.v2';
 
   Future<List<Property>> fetchProperties() async {
     final prefs = await SharedPreferences.getInstance();
@@ -70,7 +74,11 @@ class PropertyService {
           'Elevator', 'Underground parking', "Maid's room", 'Terrace',
           'Fully equipped kitchen', 'Built-in wardrobes',
         ],
-        imageUrls: const [],
+        imageUrls: const [
+          'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80',
+          'https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1200&q=80',
+          'https://images.unsplash.com/photo-1598228723793-52759bba239c?auto=format&fit=crop&w=1200&q=80',
+        ],
         verified: true,
         createdAt: now.subtract(const Duration(days: 2)),
       ),
@@ -98,7 +106,11 @@ class PropertyService {
           'Smart-home automation', 'Private elevator', '24/7 concierge',
           '24/7 security', 'EV charging station', 'Wine cellar',
         ],
-        imageUrls: const [],
+        imageUrls: const [
+          'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80',
+          'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
+          'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80',
+        ],
         verified: true,
         createdAt: now.subtract(const Duration(days: 5)),
       ),
@@ -124,7 +136,10 @@ class PropertyService {
           'Fully furnished', 'Wi-Fi', 'Central heating', 'Elevator',
           'Near universities', 'Near cafés',
         ],
-        imageUrls: const [],
+        imageUrls: const [
+          'https://images.unsplash.com/photo-1560184897-ae75f418493e?auto=format&fit=crop&w=1200&q=80',
+          'https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=1200&q=80',
+        ],
         verified: false,
         createdAt: now.subtract(const Duration(days: 1)),
       ),
@@ -151,7 +166,10 @@ class PropertyService {
           '24/7 security', 'Reception/lobby', 'Multiple elevators',
           'Near Downtown Beirut',
         ],
-        imageUrls: const [],
+        imageUrls: const [
+          'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80',
+          'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1200&q=80',
+        ],
         verified: true,
         createdAt: now.subtract(const Duration(days: 10)),
       ),
@@ -172,7 +190,9 @@ class PropertyService {
         bedrooms: 0,
         bathrooms: 0,
         amenities: const ['Mountain view', 'Easy road access', 'Open view'],
-        imageUrls: const [],
+        imageUrls: const [
+          'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80',
+        ],
         verified: false,
         createdAt: now.subtract(const Duration(days: 20)),
       ),

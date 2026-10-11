@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'auth/auth_gate_screen.dart';
+import '../theme.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -35,41 +37,53 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0E4C6B),
-      body: Center(
-        child: FadeTransition(
-          opacity: _fade,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Falls back to a simple mark if assets/images/landmark_logo.png
-              // hasn't been added yet — see README for where to drop the logo.
-              Image.asset(
-                'assets/images/landmark_logo.png',
-                width: 140,
-                height: 140,
-                errorBuilder: (_, __, ___) => const Icon(
-                  Icons.location_city,
-                  size: 110,
-                  color: Colors.white,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [LandmarkColors.navyDeep, LandmarkColors.navy, LandmarkColors.teal],
+          ),
+        ),
+        child: Center(
+          child: FadeTransition(
+            opacity: _fade,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Falls back to a simple mark if assets/images/landmark_logo.png
+                // hasn't been added yet — see README for where to drop the logo.
+                Image.asset(
+                  'assets/images/landmark_logo.png',
+                  width: 140,
+                  height: 140,
+                  errorBuilder: (_, __, ___) => Container(
+                    width: 110,
+                    height: 110,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: LandmarkColors.goldLight, width: 2),
+                    ),
+                    child: const Icon(Icons.location_city, size: 52, color: LandmarkColors.goldLight),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'LANDMARK',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 2,
+                const SizedBox(height: 24),
+                Text(
+                  'LANDMARK',
+                  style: GoogleFonts.plusJakartaSans(
+                    color: Colors.white,
+                    fontSize: 32,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 3,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                'Your new beginning starts here',
-                style: TextStyle(color: Colors.white70, fontSize: 15),
-              ),
-            ],
+                const SizedBox(height: 10),
+                Text(
+                  'Your new beginning starts here',
+                  style: GoogleFonts.plusJakartaSans(color: LandmarkColors.goldLight, fontSize: 15),
+                ),
+              ],
+            ),
           ),
         ),
       ),

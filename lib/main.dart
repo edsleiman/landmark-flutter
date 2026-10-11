@@ -11,6 +11,7 @@ import 'services/appointment_service.dart';
 import 'services/sales_service.dart';
 import 'screens/splash_screen.dart';
 import 'screens/customer/verify_viewing_screen.dart';
+import 'theme.dart';
 
 void main() {
   runApp(const LandmarkApp());
@@ -81,11 +82,7 @@ class _LandmarkAppState extends State<LandmarkApp> {
         navigatorKey: _navigatorKey,
         title: 'Landmark',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorSchemeSeed: const Color(0xFF0E4C6B),
-          useMaterial3: true,
-          scaffoldBackgroundColor: const Color(0xFFF7F8FA),
-        ),
+        theme: buildLandmarkTheme(),
         home: const SplashScreen(),
       ),
     );

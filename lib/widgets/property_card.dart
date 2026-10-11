@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import '../models/property.dart';
+import '../theme.dart';
 
 class PropertyCard extends StatelessWidget {
   final Property property;
@@ -18,75 +19,136 @@ class PropertyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Container(
+      margin: const EdgeInsets.only(bottom: 18),
+      decoration: BoxDecoration(
+        color: LandmarkColors.surface,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: LandmarkColors.navy.withOpacity(0.08),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
       clipBehavior: Clip.antiAlias,
-      margin: const EdgeInsets.only(bottom: 14),
-      child: InkWell(
-        onTap: onTap,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
-              children: [
-                AspectRatio(
-                  aspectRatio: 16 / 10,
-                  child: _Thumbnail(url: property.imageUrls.isNotEmpty ? property.imageUrls.first : null),
-                ),
-                Positioned(
-                  top: 8,
-                  left: 8,
-                  child: Row(
-                    children: [
-                      _Badge(text: property.listingKind.label),
-                      if (property.verified) ...[
-                        const SizedBox(width: 6),
-                        const _Badge(text: 'Verified', color: Colors.green),
-                      ],
-                    ],
-                  ),
-                ),
-                Positioned(
-                  top: 4,
-                  right: 4,
-                  child: IconButton(
-                    icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorite ? Colors.redAccent : Colors.white),
-                    onPressed: onToggleFavorite,
-                  ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Stack(
                 children: [
-                  Text(property.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15.5)),
-                  const SizedBox(height: 4),
-                  Text('${property.neighborhood}, ${property.city}',
-                      style: const TextStyle(color: Colors.black54, fontSize: 13)),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Text(
-                        '\$${_formatPrice(property.price)}${property.listingKind == ListingKind.rent ? "/month" : ""}',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  AspectRatio(
+                    aspectRatio: 16 / 11,
+                    child: _Thumbnail(url: property.imageUrls.isNotEmpty ? property.imageUrls.first : null),
+                  ),
+                  // Gradient scrim so the badges/price stay legible over any photo.
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    height: 70,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Colors.black.withOpacity(0), Colors.black.withOpacity(0.45)],
+                        ),
                       ),
-                      const Spacer(),
-                      if (property.bedrooms > 0) _MetaChip(icon: Icons.bed, label: '${property.bedrooms}'),
-                      const SizedBox(width: 10),
-                      if (property.bathrooms > 0) _MetaChip(icon: Icons.bathtub, label: '${property.bathrooms}'),
-                      const SizedBox(width: 10),
-                      _MetaChip(icon: Icons.square_foot, label: '${property.areaSqm.toStringAsFixed(0)} m²'),
-                    ],
+                    ),
+                  ),
+                  Positioned(
+                    top: 10,
+                    left: 10,
+                    child: Row(
+                      children: [
+                        _Badge(
+                          text: property.listingKind.label,
+                          color: property.listingKind == ListingKind.sale
+                              ? LandmarkColors.navy
+                              : LandmarkColors.teal,
+                        ),
+                        if (property.verified) ...[
+                          const SizedBox(width: 6),
+                          const _Badge(text: 'Verified', color: LandmarkColors.success, icon: Icons.verified),
+                        ],
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    top: 6,
+                    right: 6,
+                    child: Material(
+                      color: Colors.black.withOpacity(0.28),
+                      shape: const CircleBorder(),
+                      child: IconButton(
+                        icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border,
+                            color: isFavorite ? LandmarkColors.goldLight : Colors.white, size: 20),
+                        onPressed: onToggleFavorite,
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    left: 14,
+                    bottom: 10,
+                    child: Text(
+                      '\$${_formatPrice(property.price)}${property.listingKind == ListingKind.rent ? "/mo" : ""}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 18,
+                        shadows: [Shadow(color: Colors.black45, blurRadius: 6)],
+                      ),
+                    ),
                   ),
                 ],
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(property.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(Icons.place_outlined, size: 14, color: LandmarkColors.inkMuted),
+                        const SizedBox(width: 3),
+                        Expanded(
+                          child: Text('${property.neighborhood}, ${property.city}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.bodyMedium),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        if (property.bedrooms > 0) ...[
+                          _MetaChip(icon: Icons.bed_outlined, label: '${property.bedrooms}'),
+                          const SizedBox(width: 14),
+                        ],
+                        if (property.bathrooms > 0) ...[
+                          _MetaChip(icon: Icons.bathtub_outlined, label: '${property.bathrooms}'),
+                          const SizedBox(width: 14),
+                        ],
+                        _MetaChip(icon: Icons.square_foot, label: '${property.areaSqm.toStringAsFixed(0)} m²'),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -111,31 +173,57 @@ class _Thumbnail extends StatelessWidget {
   Widget build(BuildContext context) {
     if (url == null) {
       return Container(
-        color: Colors.black12,
-        child: const Icon(Icons.home_outlined, size: 48, color: Colors.black38),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [LandmarkColors.navy.withOpacity(0.12), LandmarkColors.teal.withOpacity(0.18)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Center(child: Icon(Icons.home_outlined, size: 44, color: LandmarkColors.navy.withOpacity(0.35))),
       );
     }
     if (url!.startsWith('file://') || url!.startsWith('/')) {
       final path = url!.startsWith('file://') ? url!.replaceFirst('file://', '') : url!;
       return Image.file(File(path), fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => Container(color: Colors.black12));
+          errorBuilder: (_, __, ___) => Container(color: LandmarkColors.navy.withOpacity(0.08)));
     }
-    return Image.network(url!, fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => Container(color: Colors.black12));
+    return Image.network(
+      url!,
+      fit: BoxFit.cover,
+      loadingBuilder: (context, child, progress) {
+        if (progress == null) return child;
+        return Container(
+          color: LandmarkColors.navy.withOpacity(0.06),
+          child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+        );
+      },
+      errorBuilder: (_, __, ___) => Container(
+        color: LandmarkColors.navy.withOpacity(0.08),
+        child: Center(child: Icon(Icons.broken_image_outlined, color: LandmarkColors.navy.withOpacity(0.3))),
+      ),
+    );
   }
 }
 
 class _Badge extends StatelessWidget {
   final String text;
   final Color color;
-  const _Badge({required this.text, this.color = Colors.black87});
+  final IconData? icon;
+  const _Badge({required this.text, required this.color, this.icon});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(color: color.withOpacity(0.85), borderRadius: BorderRadius.circular(6)),
-      child: Text(text, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+      decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(8)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[Icon(icon, size: 11, color: Colors.white), const SizedBox(width: 3)],
+          Text(text, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700)),
+        ],
+      ),
     );
   }
 }
@@ -150,9 +238,9 @@ class _MetaChip extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 14, color: Colors.black54),
-        const SizedBox(width: 3),
-        Text(label, style: const TextStyle(fontSize: 12.5, color: Colors.black54)),
+        Icon(icon, size: 15, color: LandmarkColors.inkMuted),
+        const SizedBox(width: 4),
+        Text(label, style: const TextStyle(fontSize: 12.5, color: LandmarkColors.inkMuted, fontWeight: FontWeight.w500)),
       ],
     );
   }
