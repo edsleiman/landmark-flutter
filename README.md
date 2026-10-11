@@ -43,6 +43,14 @@ normal internet access (your Mac is fine) to actually build and run it.
    - `<uses-permission>` for `CAMERA` and `USE_BIOMETRIC`
    - an `<intent-filter>` on `MainActivity` for `landmarkapp://verify`
 
+   and to **`MainActivity.kt`/`.java`**:
+   - switches the base class from `FlutterActivity` to
+     `FlutterFragmentActivity` — the `local_auth` plugin (biometric login)
+     requires this, and fails at runtime with
+     `PlatformException(no_fragment_activity, ...)` without it.
+     `flutter create` always generates plain `FlutterActivity`, so this
+     step is never optional on Android.
+
    It's safe to re-run (it skips anything already present). Review the
    diff afterward (`git diff ios/ android/`) — if it couldn't find
    `MainActivity` automatically (unlikely, but manifests do vary), it says

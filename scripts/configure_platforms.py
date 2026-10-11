@@ -14,6 +14,14 @@ registration that `flutter create` doesn't know to add on its own:
     - <uses-permission> for CAMERA and USE_BIOMETRIC
     - <intent-filter> on the main activity for "landmarkapp://verify"
 
+  Android (MainActivity.kt or .java):
+    - Switches the base class from FlutterActivity to FlutterFragmentActivity.
+      The local_auth plugin (Face ID / biometric login) requires this —
+      without it, biometric login fails at runtime with:
+      "PlatformException(no_fragment_activity, local_auth plugin requires
+      activity to be a FragmentActivity...)". `flutter create` always
+      generates plain FlutterActivity, so this always needs patching.
+
 Usage:
     cd landmark-flutter   # repo root, after `flutter create .`
     python3 scripts/configure_platforms.py
@@ -137,8 +145,60 @@ def configure_android() -> None:
         print("[Android] Nothing to change")
 
 
+def configure_android_main_activity() -> None:
+    android_app_main = ROOT / "android" / "app" / "src" / "main"
+    candidates = list(android_app_main.glob("kotlin/**/MainActivity.kt")) + \
+        list(android_app_main.glob("java/**/MainActivity.java"))
+
+    if not candidates:
+        print(f"[Android] Skipped MainActivity patch — none found under {android_app_main}. "
+              f"Run `flutter create .` first.")
+        return
+
+    for path in candidates:
+        text = path.read_text()
+        original = text
+
+        if path.suffix == ".kt":
+            if "FlutterFragmentActivity" in text:
+                print(f"[Android] {path.name} already uses FlutterFragmentActivity, left as-is")
+                continue
+            text = text.replace(
+                "import io.flutter.embedding.android.FlutterActivity",
+                "import io.flutter.embedding.android.FlutterFragmentActivity",
+            )
+            text = re.sub(
+                r"class\s+MainActivity\s*:\s*FlutterActivity\s*\(\s*\)",
+                "class MainActivity: FlutterFragmentActivity()",
+                text,
+            )
+        else:  # .java
+            if "FlutterFragmentActivity" in text:
+                print(f"[Android] {path.name} already uses FlutterFragmentActivity, left as-is")
+                continue
+            text = text.replace(
+                "import io.flutter.embedding.android.FlutterActivity;",
+                "import io.flutter.embedding.android.FlutterFragmentActivity;",
+            )
+            text = re.sub(
+                r"class\s+MainActivity\s+extends\s+FlutterActivity",
+                "class MainActivity extends FlutterFragmentActivity",
+                text,
+            )
+
+        if text != original:
+            path.write_text(text)
+            print(f"[Android] Switched {path.relative_to(ROOT)} to FlutterFragmentActivity "
+                  f"(required by local_auth for biometric login)")
+        else:
+            print(f"[Android] Could not find the expected FlutterActivity pattern in {path.name} — "
+                  f"check it manually (see README).")
+
+
 if __name__ == "__main__":
     configure_ios()
     print()
     configure_android()
+    print()
+    configure_android_main_activity()
     print("\nDone. Review the diffs (`git diff ios/ android/`) before committing.")
