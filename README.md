@@ -27,18 +27,26 @@ normal internet access (your Mac is fine) to actually build and run it.
    ```
    This adds the missing `android/` and `ios/` folders without touching your
    existing `lib/` code or `pubspec.yaml`.
-4. Add the required permission strings (Flutter's `flutter create` won't add
-   these for you automatically):
-   - **iOS** (`ios/Runner/Info.plist`): add
-     - `NSFaceIDUsageDescription` — "Log in to Landmark with Face ID"
-     - `NSCameraUsageDescription` — "Landmark needs camera access to photograph listings"
-     - `NSPhotoLibraryUsageDescription` — "Landmark needs photo library access to add listing photos"
-   - **Android** (`android/app/src/main/AndroidManifest.xml`): add inside `<manifest>`
-     - `<uses-permission android:name="android.permission.CAMERA"/>`
-     - `<uses-permission android:name="android.permission.USE_BIOMETRIC"/>`
-   - Also register the `landmarkapp://verify` deep link scheme:
-     - **iOS**: add a URL Type in Info.plist with scheme `landmarkapp`.
-     - **Android**: add an `<intent-filter>` with `<data android:scheme="landmarkapp" android:host="verify"/>` to the main activity in `AndroidManifest.xml`.
+4. **Add the required permission strings and deep-link registration.**
+   `flutter create` doesn't add these on its own, so run the included script
+   right after step 3 — it edits the two files `flutter create` just
+   generated:
+   ```
+   python3 scripts/configure_platforms.py
+   ```
+   This adds, to **`ios/Runner/Info.plist`**:
+   - `NSFaceIDUsageDescription`, `NSCameraUsageDescription`,
+     `NSPhotoLibraryUsageDescription`
+   - a `CFBundleURLTypes` entry registering the `landmarkapp` URL scheme
+
+   and to **`android/app/src/main/AndroidManifest.xml`**:
+   - `<uses-permission>` for `CAMERA` and `USE_BIOMETRIC`
+   - an `<intent-filter>` on `MainActivity` for `landmarkapp://verify`
+
+   It's safe to re-run (it skips anything already present). Review the
+   diff afterward (`git diff ios/ android/`) — if it couldn't find
+   `MainActivity` automatically (unlikely, but manifests do vary), it says
+   so and you'll need to add that one `<intent-filter>` block by hand.
 5. Install dependencies and run:
    ```
    flutter pub get
